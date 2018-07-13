@@ -36,11 +36,11 @@ class Phase < ActiveRecord::Base
   belongs_to :template
 
   has_one :prefix_section, -> (phase) {
-    modifiable.where("number < ?",
+    modifiable.order(:number).where("number < ?",
                       phase.sections.not_modifiable.minimum(:number))
   }, class_name: "Section"
 
-  has_many :sections, dependent: :destroy
+  has_many :sections, -> { order(:number) }, dependent: :destroy
 
   has_many :template_sections, -> {
     not_modifiable
@@ -48,10 +48,11 @@ class Phase < ActiveRecord::Base
 
 
   has_many :suffix_sections, -> (phase) {
-    modifiable.where(<<~SQL, phase_id: phase.id, modifiable: false)
+    modifiable.order(:number)
+              .where(<<~SQL, phase_id: phase.id, modifiable: false)
       sections.number > (SELECT MAX(number) FROM sections
-                           WHERE sections.modifiable = :modifiable)
-                           AND sections.phase_id = :phase_id
+                           WHERE sections.modifiable = :modifiable
+                           AND sections.phase_id = :phase_id)
     SQL
   }, class_name: "Section"
 
