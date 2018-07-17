@@ -5,4 +5,6 @@ module ValidationMessages
 
   UNIQUENESS_MESSAGE = _("must be unique")
 
+  INCLUSION_MESSAGE = _("isn't a valid value")
+
 end
