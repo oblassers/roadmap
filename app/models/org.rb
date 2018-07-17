@@ -33,38 +33,82 @@
 #
 
 class Org < ActiveRecord::Base
+  include ValidationMessages
+  include ValidationValues
   include GlobalHelpers
   include FlagShihTzu
   extend Dragonfly::Model::Validations
   validates_with OrgLinksValidator
 
+  LOGO_FORMATS = %w[jpeg png gif jpg bmp].freeze
+
   # Stores links as an JSON object: { org: [{"link":"www.example.com","text":"foo"}, ...] }
   # The links are validated against custom validator allocated at validators/template_links_validator.rb
   serialize :links, JSON
 
-  ##
-  # Associations
-#  belongs_to :organisation_type   # depricated, but cannot be removed until migration run
+
+  # ================
+  # = Associations =
+  # ================
+
   belongs_to :language
+
+  belongs_to :region
+
   has_many :guidance_groups
+
   has_many :templates
+
   has_many :users
+
   has_many :annotations
 
   has_and_belongs_to_many :token_permission_types, join_table: "org_token_permissions", unique: true
 
   has_many :org_identifiers
+
   has_many :identifier_schemes, through: :org_identifiers
 
-  ##
-  # Validators
-  validates :name, presence: {message: _("can't be blank")}, uniqueness: {message: _("must be unique")}
+
+  # ===============
+  # = Validations =
+  # ===============
+
+  validates :name, presence: { message: PRESENCE_MESSAGE },
+                   uniqueness: { message: UNIQUENESS_MESSAGE }
+
+  validates :abbreviation, presence: { message: PRESENCE_MESSAGE }
+
+  validates :is_other, inclusion: { in: BOOLEAN_VALUES,
+                                    message: INCLUSION_MESSAGE }
+
+  validates :region, presence: { message: PRESENCE_MESSAGE }
+
+  validates :language, presence: { message: PRESENCE_MESSAGE }
+
+  validates :contact_email, presence: { message: PRESENCE_MESSAGE,
+                                        if: :feedback_enabled }
+
+  validates :org_type, presence: { message: PRESENCE_MESSAGE }
+
+  validates :feedback_enabled, inclusion: { in: BOOLEAN_VALUES,
+                                            message: INCLUSION_MESSAGE }
+
+  validates :feedback_email_subject, presence: { message: PRESENCE_MESSAGE,
+                                                 if: :feedback_enabled }
+
+  validates :feedback_email_msg, presence: { message: PRESENCE_MESSAGE,
+                                             if: :feedback_enabled }
+
+  validates_property :format, of: :logo, in: LOGO_FORMATS,
+                     message: _("must be one of the following formats: jpeg, jpg, png, gif, bmp")
+
+  validates_size_of :logo, maximum: 500.kilobytes, message: _("can't be larger than 500KB")
+
   # allow validations for logo upload
   dragonfly_accessor :logo do
     after_assign :resize_image
   end
-  validates_property :format, of: :logo, in: ['jpeg', 'png', 'gif','jpg','bmp'], message: _("must be one of the following formats: jpeg, jpg, png, gif, bmp")
-  validates_size_of :logo, maximum: 500.kilobytes, message: _("can't be larger than 500KB")
 
   ##
   # Define Bit Field values
