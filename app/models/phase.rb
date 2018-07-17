@@ -36,15 +36,18 @@ class Phase < ActiveRecord::Base
   belongs_to :template
 
   has_one :prefix_section, -> (phase) {
-    modifiable.order(:number).where("number < ?",
-                      phase.sections.not_modifiable.minimum(:number))
+    min_number = phase.sections.not_modifiable.minimum(:number)
+    modifiable.order(:number)
+              .where("number < ?", min_number)
   }, class_name: "Section"
 
-  has_many :sections, -> { order(:number) }, dependent: :destroy
+  has_many :sections, -> { order(:number) }, dependent: :destroy do
+    def all_modifiable?
+      where(modifiable: false).empty?
+    end
+  end
 
-  has_many :template_sections, -> {
-    not_modifiable
-  }, class_name: "Section"
+  has_many :template_sections, -> { not_modifiable }, class_name: "Section"
 
 
   has_many :suffix_sections, -> (phase) {

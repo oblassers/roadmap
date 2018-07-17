@@ -6,27 +6,39 @@
       sort_org_admin_template_phase_path(template, phase)
      %>">
 
-      <%= render partial: "org_admin/sections/section_group",
-                 locals: { sections: Array(prefix_section),
-                           phase: phase,
-                           template: template,
-                           current_section: current_section,
-                           modifiable: true } if prefix_section %>
-
-      <%= render partial: "org_admin/sections/section_group",
-                locals: { sections: sections,
-                          phase: phase,
-                          template: template,
-                          current_section: current_section,
-                          modifiable: modifiable } %>
-
-      <% suffix_sections.each do |s| %>
+      <% if phase.sections.all_modifiable? %>
+        <% phase.sections.each do |s| %>
+          <%= render partial: "org_admin/sections/section_group",
+                     locals: { sections: Array(s),
+                               phase: phase,
+                               template: template,
+                               current_section: current_section,
+                               modifiable: true } %>
+        <% end %>
+      <% else %>
         <%= render partial: "org_admin/sections/section_group",
-                   locals: { sections: Array(s),
+                   locals: { sections: Array(phase.prefix_section),
                              phase: phase,
                              template: template,
                              current_section: current_section,
-                             modifiable: true } %>
+                             modifiable: true } if phase.prefix_section %>
+
+        <%= render partial: "org_admin/sections/section_group",
+                   locals: { sections: phase.template_sections,
+                            phase: phase,
+                            template: template,
+                            current_section: current_section,
+                            modifiable: modifiable } %>
+
+        <% phase.suffix_sections.each do |s| %>
+          <%= render partial: "org_admin/sections/section_group",
+                     locals: { sections: Array(s),
+                               phase: phase,
+                               template: template,
+                               current_section: current_section,
+                               modifiable: true } %>
+        <% end %>
+
       <% end %>
 
     </div>
