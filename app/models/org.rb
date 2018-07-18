@@ -55,7 +55,7 @@ class Org < ActiveRecord::Base
 
   belongs_to :region
 
-  has_many :guidance_groups
+  has_many :guidance_groups, dependent: :destroy
 
   has_many :templates
 
@@ -222,20 +222,25 @@ class Org < ActiveRecord::Base
   end
 
   private
-    ##
-    # checks size of logo and resizes if necessary
-    #
-    def resize_image
-      unless logo.nil?
-        if logo.height != 100
-          self.logo = logo.thumb('x100')  # resize height and maintain aspect ratio
-        end
+
+  ##
+  # checks size of logo and resizes if necessary
+  #
+  def resize_image
+    unless logo.nil?
+      if logo.height != 100
+        self.logo = logo.thumb('x100')  # resize height and maintain aspect ratio
       end
     end
+  end
 
-    # creates a dfefault Guidance Group on create on the Org
-    def create_guidance_group
-      GuidanceGroup.create(name: self.abbreviation? ? self.abbreviation : self.name , org_id: self.id)
-    end
-
+  # creates a dfefault Guidance Group on create on the Org
+  def create_guidance_group
+    GuidanceGroup.create!({
+      name: abbreviation? ? self.abbreviation : self.name ,
+      org: self,
+      optional_subset: false,
+      published: false,
+    })
+  end
 end
