@@ -53,21 +53,6 @@ class Annotation < ActiveRecord::Base
                    uniqueness: { message: UNIQUENESS_MESSAGE,
                                  scope: :question_id }
 
-  # =================
-  # = Class Methods =
-  # =================
-
-  ##
-  # deep copy the given annotation and all it's associations
-  #
-  # @params [Annotation] annotation to be deep copied
-  # @return [Annotation] the saved, copied annotation
-  def self.deep_copy(annotation)
-    annotation_copy = annotation.dup
-    annotation_copy.save!
-    return annotation_copy
-  end
-
   # ===========================
   # = Public instance methods =
   # ===========================
