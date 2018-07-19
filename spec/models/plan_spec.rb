@@ -7,8 +7,6 @@ describe Plan do
 
     it { is_expected.to validate_presence_of(:template) }
 
-    it { is_expected.to validate_presence_of(:description) }
-
     it { is_expected.to allow_values(true, false).for(:feedback_requested) }
 
     it { is_expected.not_to allow_value(nil).for(:feedback_requested) }

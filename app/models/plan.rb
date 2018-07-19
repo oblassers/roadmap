@@ -110,8 +110,6 @@ class Plan < ActiveRecord::Base
 
   validates :template, presence: { message: PRESENCE_MESSAGE }
 
-  validates :description, presence: { message: PRESENCE_MESSAGE }
-
   validates :feedback_requested, inclusion: { in: BOOLEAN_VALUES }
 
   validates :complete, inclusion: { in: BOOLEAN_VALUES }
