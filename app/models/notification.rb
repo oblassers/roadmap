@@ -44,10 +44,10 @@ class Notification < ActiveRecord::Base
   validates :dismissable, inclusion: { in: BOOLEAN_VALUES }
 
   validates :starts_at, presence: { message: PRESENCE_MESSAGE },
-                        after: { date: Date.today }
+                        after: { date: Date.today, on: :create }
 
   validates :expires_at, presence: { message: PRESENCE_MESSAGE },
-                         after: { date: Date.tomorrow }
+                         after: { date: Date.tomorrow, on: :create }
 
 
   # ==========
