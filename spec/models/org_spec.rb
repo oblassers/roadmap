@@ -6,16 +6,17 @@ RSpec.describe Org, type: :model do
 
     it { is_expected.to validate_presence_of(:name) }
 
-    it { is_expected.to validate_uniqueness_of(:name)
-                          .with_message("must be unique") }
+    it {
+      subject.name = "DMP Company"
+      is_expected.to validate_uniqueness_of(:name)
+                          .with_message("must be unique")
+    }
 
     it { is_expected.to validate_presence_of(:abbreviation) }
 
     it { is_expected.to allow_values(true, false).for(:is_other) }
 
     it { is_expected.not_to allow_value(nil).for(:is_other) }
-
-    it { is_expected.to validate_presence_of(:region) }
 
     it { is_expected.to validate_presence_of(:language) }
 

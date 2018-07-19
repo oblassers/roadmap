@@ -82,8 +82,6 @@ class Org < ActiveRecord::Base
   validates :is_other, inclusion: { in: BOOLEAN_VALUES,
                                     message: INCLUSION_MESSAGE }
 
-  validates :region, presence: { message: PRESENCE_MESSAGE }
-
   validates :language, presence: { message: PRESENCE_MESSAGE }
 
   validates :contact_email, presence: { message: PRESENCE_MESSAGE,

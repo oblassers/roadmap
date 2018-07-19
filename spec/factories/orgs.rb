@@ -29,7 +29,7 @@
 
 FactoryBot.define do
   factory :org do
-    sequence(:name) { |i| Faker::Company.unique.name }
+    name { Faker::Company.unique.name }
     links { { "org" => [] } }
     abbreviation { self.name[0..10] }
     feedback_enabled false
