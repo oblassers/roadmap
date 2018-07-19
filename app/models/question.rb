@@ -25,6 +25,8 @@
 
 class Question < ActiveRecord::Base
   include ValidationMessages
+  include ActsAsSortable
+
   # include
   ##
   # Sort order: Number ASC

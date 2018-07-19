@@ -29,6 +29,8 @@
 class Phase < ActiveRecord::Base
   include ValidationMessages
   include ValidationValues
+  include ActsAsSortable
+
   ##
   # Sort order: Number ASC
   default_scope { order(number: :asc) }
@@ -64,8 +66,6 @@ class Phase < ActiveRecord::Base
   # ===============
 
   validates :title, presence: { message: PRESENCE_MESSAGE }
-
-  validates :description, presence: { message: PRESENCE_MESSAGE }
 
   validates :number, presence: { message: PRESENCE_MESSAGE },
                      uniqueness: { message: UNIQUENESS_MESSAGE,

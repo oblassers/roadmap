@@ -24,6 +24,7 @@
 class Section < ActiveRecord::Base
   include ValidationMessages
   include ValidationValues
+  include ActsAsSortable
 
   # ================
   # = Associations =
@@ -42,7 +43,7 @@ class Section < ActiveRecord::Base
 
   validates :title, presence: { message: PRESENCE_MESSAGE }
 
-  validates :description, presence: { message: PRESENCE_MESSAGE }
+  # validates :description, presence: { message: PRESENCE_MESSAGE }
 
   validates :number, presence: { message: PRESENCE_MESSAGE },
                      uniqueness: { scope: :phase_id,
@@ -85,22 +86,6 @@ class Section < ActiveRecord::Base
   # @return [ActiveRecord::Relation] Returns the sections that aren't modifiable
   scope :not_modifiable, -> { where(modifiable: false) }
 
-  # =================
-  # = Class methods =
-  # =================
-
-  def self.update_numbers!(*ids, phase:)
-    # Ensure only section ids belonging to this Phase are included.
-    ids = ids.map(&:to_i) & phase.section_ids
-    return if ids.empty?
-    case connection.adapter_name
-    when "PostgreSQL" then update_numbers_postgresql!(ids)
-    when "Mysql2"     then update_numbers_mysql2!(ids)
-    else
-      update_numbers_sequentially!(ids)
-    end
-  end
-
   # ===========================
   # = Public instance methods =
   # ===========================
@@ -136,34 +121,6 @@ class Section < ActiveRecord::Base
   end
 
   private
-
-  # =========================
-  # = Private class methods =
-  # =========================
-
-  def self.update_numbers_postgresql!(ids)
-    # Build an Array with each ID and its relative position in the Array
-    values = ids.each_with_index.map { |id, i| "(#{id}, #{i + 1})" }.join(", ")
-    # Run a single UPDATE query for all records.
-    query = <<~SQL
-      UPDATE #{table_name} \
-        SET number = svals.number \
-        FROM (VALUES #{sanitize_sql(values)}) AS svals(id, number) \
-        WHERE svals.id = #{table_name}.id;
-      SQL
-    connection.execute(query)
-  end
-
-  def self.update_numbers_mysql2!(ids)
-    ids_string = ids.map { |id| "'#{id}'" }.join(",")
-    update_all(%Q{ number = FIELD(id, #{sanitize_sql(ids_string)}) })
-  end
-
-  def self.update_numbers_sequentially!(ids)
-    ids.each_with_index.map do |id, number|
-      find(id).update_attribute(:number, number + 1)
-    end
-  end
 
   # ============================
   # = Private instance methods =
