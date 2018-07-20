@@ -36,5 +36,26 @@ FactoryBot.define do
     region { Region.first || create(:region) }
     language { Language.first || create(:language) }
     is_other false
+
+    trait :institution do
+      institution true
+    end
+    trait :funder do
+      funder true
+    end
+    trait :organisation do
+      organisation true
+    end
+    trait :research_institute do
+      research_institute true
+    end
+    trait :project do
+      project true
+    end
+    trait :school do
+      school true
+    end
   end
 end
+
+

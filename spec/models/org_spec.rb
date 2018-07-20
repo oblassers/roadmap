@@ -46,4 +46,30 @@ RSpec.describe Org, type: :model do
     #
   end
 
+  describe ".managing_orgs" do
+
+    subject { Org.managing_orgs }
+
+    before do
+      Branding.expects(:fetch).with(:organisation, :abbreviation)
+                              .returns("test")
+    end
+
+    context "when Org has same abbr as branding" do
+
+      let!(:org) { create(:org, abbreviation: 'test') }
+
+      it { is_expected.to include(org) }
+
+    end
+
+    context "when Org doesn't have same abbr as branding" do
+
+      let!(:org) { create(:org, abbreviation: 'foo-bar') }
+
+      it { is_expected.not_to include(org) }
+
+    end
+  end
+
 end
