@@ -71,7 +71,7 @@ class Notification < ActiveRecord::Base
   # If no user is given, currently logged in user (if any) is the default
   # @return [Boolean] is the Notification acknowledged ?
   def acknowledged?(user)
-    users.include?(user) if user.present? && dismissable?
+    dismissable? && user.present? && users.include?(user)
   end
 
   private
