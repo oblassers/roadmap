@@ -68,28 +68,6 @@ class GuidanceGroup < ActiveRecord::Base
   # =================
 
   ##
-  # Returns the list of all guidance groups not coming from the given
-  # organisations
-  #
-  # @param excluded_orgs [Array<Organisation>] a list of organisations to
-  # exclude in the result.
-  # @return [Array<GuidanceGroup>] a list of guidance groups
-  def self.guidance_groups_excluding(excluded_orgs)
-    excluded_org_ids = []
-
-    if excluded_orgs.is_a?(Array)
-      excluded_orgs.each do |org|
-        excluded_org_ids << org.id
-      end
-    else
-      excluded_org_ids << excluded_orgs
-    end
-
-    return_orgs =  GuidanceGroup.where("org_id NOT IN (?)", excluded_org_ids)
-    return_orgs
-  end
-
-  ##
   # Returns whether or not a given user can view a given guidance group
   # we define guidances viewable to a user by those owned by:
   #   the managing curation center
