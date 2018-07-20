@@ -141,6 +141,8 @@ group :test do
   gem 'database_cleaner', require: false
 
   gem "shoulda", require: false
+
+  gem "mocha", require: false
 end
 
 group :development do
