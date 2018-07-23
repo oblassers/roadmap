@@ -16,5 +16,18 @@ FactoryBot.define do
     user
     plan
     access 1
+
+    trait :reviewer do
+      reviewer true
+    end
+    trait :administrator do
+      administrator true
+    end
+    trait :editor do
+      editor true
+    end
+    trait :commenter do
+      commenter true
+    end
   end
 end

@@ -198,15 +198,6 @@ class Org < ActiveRecord::Base
     return templates.where("published = ?", true)
   end
 
-  def check_api_credentials
-    if token_permission_types.count == 0
-      users.each do |user|
-        user.api_token = ""
-        user.save!
-      end
-    end
-  end
-
   def org_admins
     User.joins(:perms).where("users.org_id = ? AND perms.name IN (?)", self.id,
       ['grant_permissions', 'modify_templates', 'modify_guidance', 'change_org_details'])
