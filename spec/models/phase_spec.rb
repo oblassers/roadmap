@@ -21,7 +21,7 @@ RSpec.describe Phase, type: :model do
 
   context "associations" do
 
-    it { is_expected.to belong_to :template }
+    it { is_expected.to belong_to(:template).touch(true) }
 
     it { is_expected.to have_one :prefix_section }
 
@@ -154,19 +154,31 @@ RSpec.describe Phase, type: :model do
 
     context "when plan is present" do
 
-      pending
+      let!(:phase) { create(:phase, template: template) }
 
+      let!(:section) { create(:section, phase: phase) }
 
-      # def num_answered_questions(plan)
-      #   return 0 if plan.nil?
-      #   return sections.reduce(0) do |m, s|
-      #     m + s.num_answered_questions(plan)
-      #   end
-      # end
+      let!(:plan) { create(:plan) }
+
+      let!(:template) { plan.template }
+
+      before do
+        question = create(:question, section: section)
+        create(:answer, question: question, plan: plan, text: '')
+
+        question = create(:question, section: section)
+        create(:answer, question: question, plan: plan)
+
+        question = create(:question, section: section)
+        create(:answer, question: question, plan: plan)
+      end
+
+      it "returns the sum of Plan's Phase's num_answered_questions" do
+        expect(subject).to eql(2)
+      end
 
     end
   end
-
 
   describe "#num_questions" do
 
