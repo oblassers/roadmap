@@ -28,6 +28,7 @@ class QuestionFormat < ActiveRecord::Base
 
   alias_attribute :to_s, :title
 
+  alias_attribute :option_based?, :option_based
 
   # ================
   # = Associations =

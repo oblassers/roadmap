@@ -64,6 +64,29 @@ RSpec.describe QuestionFormat, type: :model do
 
   end
 
+  describe "#option_based?" do
+
+    subject { question_format.option_based? }
+
+    context "when question_format option_based is true" do
+
+      let!(:question_format) { create(:question_format, option_based: true) }
+
+      it { is_expected.to eql(true) }
+
+    end
+
+
+    context "when question_format option_based is true" do
+
+      let!(:question_format) { create(:question_format, option_based: false) }
+
+      it { is_expected.to eql(false) }
+
+    end
+
+  end
+
   describe "#formattype" do
 
     it "raises an exception when value not recognised" do
