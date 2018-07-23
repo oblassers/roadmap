@@ -25,5 +25,24 @@ FactoryBot.define do
     title { Faker::Lorem.sentence }
     description { Faker::Lorem.paragraph }
     locale "en_GB"
+    is_default false
+    published false
+    archived false
+
+    trait :archived do
+      archived true
+    end
+
+    trait :default do
+      is_default true
+    end
+
+    trait :published do
+      published true
+    end
+
+    trait :unpublished do
+      published false
+    end
   end
 end
