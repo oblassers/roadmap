@@ -3,8 +3,8 @@ class PlanPolicy < ApplicationPolicy
   attr_reader :plan
 
   def initialize(user, plan)
-    raise Pundit::NotAuthorizedError, _("must be logged in") unless user 
-    raise Pundit::NotAuthorizedError, _("are not authorized to view that plan") unless plan || plan.publicly_visible?
+    raise Pundit::NotAuthorizedError, _("must be logged in") unless user
+    raise Pundit::NotAuthorizedError, _("are not authorized to view that plan") unless plan&.publicly_visible?
     @user = user
     @plan = plan
   end
@@ -14,7 +14,7 @@ class PlanPolicy < ApplicationPolicy
   end
 
   def share?
-    @plan.editable_by?(@user.id) 
+    @plan.editable_by?(@user.id)
   end
 
   def export?
@@ -72,7 +72,7 @@ class PlanPolicy < ApplicationPolicy
   def update_guidances_list?
     @plan.editable_by?(@user.id)
   end
-  
+
   def phase_status?
     @plan.readable_by?(@user.id)
   end
