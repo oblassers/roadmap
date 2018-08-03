@@ -26,24 +26,11 @@
 class Answer < ActiveRecord::Base
   include ValidationMessages
 
-  after_save do |answer|
-    if answer.plan_id.present?
-      plan = answer.plan
-      complete = plan.no_questions_matches_no_answers?
-      if plan.complete != complete
-        plan.complete = complete
-        plan.save!
-      else
-        plan.touch  # Force updated_at changes if nothing changed since save only saves if changes were made to the record
-      end
-    end
-  end
-
   ##
   # Associations
 	belongs_to :question
 	belongs_to :user
-	belongs_to :plan
+	belongs_to :plan, touch: true
   has_many :notes, dependent: :destroy
   has_and_belongs_to_many :question_options, join_table: "answers_question_options"
 
@@ -61,6 +48,13 @@ class Answer < ActiveRecord::Base
   validates :question, presence: { message: PRESENCE_MESSAGE },
                        uniqueness: { message: UNIQUENESS_MESSAGE,
                                      scope: :plan_id }
+
+  # =============
+  # = Callbacks =
+  # =============
+
+  after_save :update_plan_complete
+
 
   ##
   # deep copy the given answer
@@ -142,5 +136,12 @@ class Answer < ActiveRecord::Base
     h['standards'] = standards
     h['text'] = text
     self.text = h.to_json
+  end
+
+  private
+
+  def update_plan_complete
+    return unless plan.present?
+    plan.update(complete: plan.no_questions_matches_no_answers?)
   end
 end

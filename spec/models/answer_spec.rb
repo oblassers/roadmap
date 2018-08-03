@@ -2,6 +2,49 @@ require 'rails_helper'
 
 RSpec.describe Answer, type: :model do
 
+  describe "#save" do
+
+    subject { answer.save }
+
+    context "on create" do
+
+      let!(:plan) { create(:plan, updated_at: 1.week.ago, complete: true) }
+
+      let!(:answer) { build(:answer, plan: plan) }
+
+      it "updates the Plan's timestamp" do
+        expect { subject }.to change { plan.updated_at }
+      end
+
+      it "changes the Plan's complete attribute to false" do
+        expect { subject }.to change { plan.complete }.to(false)
+      end
+
+    end
+
+    context "on update" do
+
+      let!(:plan) { create(:plan, updated_at: 1.week.ago, complete: true) }
+
+      let!(:answer) { create(:answer, plan: plan) }
+
+      before do
+        # Need to change answer or it won't save
+        answer.text = "Something else"
+      end
+
+      it "updates the Plan's timestamp" do
+        expect { subject }.to change { plan.updated_at }
+      end
+
+      it "changes the Plan's complete attribute to false" do
+        expect { subject }.to change { plan.complete }.to(false)
+      end
+
+    end
+
+  end
+
   context "validations" do
     subject { build(:answer) }
 
