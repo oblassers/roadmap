@@ -22,11 +22,13 @@ RSpec.describe "SuperAdmins OrgSwaps", type: :feature, js: true do
     find('[aria-describedby="label-id-superadmin_user_org_name"]').click
     fill_in(:superadmin_user_org_name, with: @org2.name[0..4])
     find("#suggestion-2-0").click
+    sleep(0.1)
     click_button "Change affiliation"
     expect(current_path).to eql(org_admin_templates_path)
     expect(page).to have_text(@org2.name)
     expect(page).not_to have_text(@org1.name)
-    expect(@user.reload.org).to eql(@org2)
+    user_org = Org.joins(:users).where(users: { email: @user.email }).first.name
+    expect(user_org).to eql(@org2.name)
   end
 
 end
