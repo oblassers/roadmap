@@ -15,9 +15,17 @@ class UsersController < ApplicationController
     authorize User
     if current_user.can_super_admin?
       @users = User.page(1)
+      @users_to_csv = User.all
     else
       @users = current_user.org.users.page(1)
+      @users_to_csv = current_user.org.users.order(:surname)
     end
+
+    respond_to do |format|
+      format.html
+      format.csv { send_data User::AtCsv.new(@users_to_csv).to_csv, filename: "users-accounts-#{Date.today}.csv" }
+    end
+
   end
 
   ##
